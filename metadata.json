@@ -1,0 +1,7 @@
+{
+  "name": "FYX",
+  "description": "A premium e-commerce platform with a built-in AI product manager and customer assistant, featuring a sleek admin dashboard and responsive storefront.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
