@@ -22,17 +22,17 @@ export const INITIAL_PRODUCTS: Product[] = [
   {
     id: '2',
     name: 'Sleek iPhone Case',
-    description: 'Protect in style with premium matte finish.',
+    description: 'Protect in style with premium matte finish. Durable and lightweight.',
     price: 249.00,
     oldPrice: 299.00,
     discountBadge: '-17%',
-    category: 'Phone Cover',
+    category: 'Phone Covers',
     image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
     stock: 50,
     featured: true,
     options: [
-      { name: 'Model', values: ['iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 15 Pro'] },
-      { name: 'Finish', values: ['Matte', 'Glossy'] }
+      { name: 'Phone Model', values: ['iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 15 Pro', 'Samsung S23', 'Samsung S24'] },
+      { name: 'Finish', values: ['Matte', 'Glossy', 'Transparent'] }
     ]
   },
   {
@@ -47,13 +47,14 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 200,
     featured: true,
     options: [
-       { name: 'Ribbon Color', values: ['Red', 'Gold', 'Silver'] }
+       { name: 'Ribbon Color', values: ['Red', 'Gold', 'Silver', 'Blue'] },
+       { name: 'Box Size', values: ['Small', 'Medium', 'Large'] }
     ]
   },
   {
     id: '4',
-    name: 'Classic Round T-Shirt',
-    description: 'Wear your creativity with comfort. 100% Cotton.',
+    name: 'Classic Men\'s Tee',
+    description: 'Wear your creativity with comfort. 100% Cotton, pre-shrunk fabric.',
     price: 349.00,
     oldPrice: 399.00,
     discountBadge: '-13%',
@@ -63,13 +64,13 @@ export const INITIAL_PRODUCTS: Product[] = [
     featured: true,
     options: [
       { name: 'Size', values: ['S', 'M', 'L', 'XL', 'XXL'] },
-      { name: 'Color', values: ['Black', 'White', 'Navy Blue', 'Grey'] }
+      { name: 'Color', values: ['Black', 'White', 'Navy Blue', 'Heather Grey', 'Maroon'] }
     ]
   },
   {
     id: '5',
-    name: 'Classic Round T-Shirt',
-    description: 'Style meets comfort for every day. Premium fabric.',
+    name: 'Premium Women\'s Tee',
+    description: 'Style meets comfort for every day. Premium combed cotton.',
     price: 329.00,
     oldPrice: 379.00,
     discountBadge: '-13%',
@@ -79,7 +80,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     featured: true,
     options: [
       { name: 'Size', values: ['XS', 'S', 'M', 'L', 'XL'] },
-      { name: 'Color', values: ['Black', 'White', 'Pink', 'Lavender'] }
+      { name: 'Color', values: ['Black', 'White', 'Pink', 'Lavender', 'Yellow'] }
     ]
   },
   {
@@ -94,14 +95,14 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 300,
     featured: true,
     options: [
-      { name: 'Size', values: ['A5', 'A4', 'A3'] },
+      { name: 'Size', values: ['A5 (5.8 x 8.3")', 'A4 (8.3 x 11.7")', 'A3 (11.7 x 16.5")', 'A2 (16.5 x 23.4")'] },
       { name: 'Material', values: ['Glossy Paper', 'Matte Paper', 'Canvas Texture'] }
     ]
   },
   {
     id: '7',
     name: 'Ceramic Coffee Mug',
-    description: 'Start your day with warm memories.',
+    description: 'Start your day with warm memories. Microwave and dishwasher safe.',
     price: 249.00,
     oldPrice: 299.00,
     discountBadge: '-17%',
@@ -110,7 +111,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 120,
     featured: true,
     options: [
-      { name: 'Color', values: ['White', 'Black'] }
+      { name: 'Base Color', values: ['White', 'Black'] },
+      { name: 'Capacity', values: ['325ml (Standard)', '450ml (Large)'] }
     ]
   },
   {
@@ -125,8 +127,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     stock: 90,
     featured: true,
     options: [
-      { name: 'Size', values: ['5x7', '8x10', 'A4', 'A3'] },
-      { name: 'Material', values: ['Oak Wood', 'Black Metal', 'White Wood'] }
+      { name: 'Frame Size', values: ['6x8" (A5)', '8x12" (A4)', '12x16" (A3)'] },
+      { name: 'Material', values: ['Oak Wood', 'Black Metal', 'White Wood', 'Walnut'] },
+      { name: 'Mount', values: ['With Mount', 'No Mount'] }
     ]
   }
 ];

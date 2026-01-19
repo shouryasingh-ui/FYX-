@@ -62,3 +62,22 @@ export const chatWithCustomer = async (message: string, context: string): Promis
     return "Our assistant is currently resting. Please try again later.";
   }
 };
+
+export const generateProductImage = async (prompt: string): Promise<string | null> => {
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash-image',
+      contents: { parts: [{ text: prompt }] },
+    });
+
+    for (const part of response.candidates?.[0]?.content?.parts || []) {
+      if (part.inlineData) {
+        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error("AI Image Gen Error:", error);
+    return null;
+  }
+};

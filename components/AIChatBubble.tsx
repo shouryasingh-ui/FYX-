@@ -36,7 +36,7 @@ const AIChatBubble: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[60]">
+    <div className="fixed bottom-24 md:bottom-6 right-6 z-[90]">
       {isOpen ? (
         <div className="bg-white w-80 sm:w-96 h-[500px] rounded-2xl shadow-2xl border flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div className="bg-gray-900 p-4 text-white flex justify-between items-center">

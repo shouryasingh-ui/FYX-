@@ -38,6 +38,10 @@ export interface Order {
   address: string;
   phone: string;
   paymentMethod: string;
+  paymentDetails?: {
+    upiId?: string;
+    screenshot?: string;
+  };
 }
 
 export enum AppRoute {
