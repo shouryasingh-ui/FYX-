@@ -1,3 +1,4 @@
+
 import { Product } from './types';
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -33,6 +34,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?auto=format&fit=crop&q=80&w=800',
     stock: 50,
     featured: true,
+    allowCustomImages: true,
     options: [
       { name: 'Phone Model', values: ['iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 15 Pro', 'Samsung S23', 'Samsung S24'] },
       { name: 'Finish', values: ['Matte', 'Glossy', 'Transparent'] }
@@ -52,6 +54,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1513201099705-a9746e1e201f?auto=format&fit=crop&q=80&w=800',
     stock: 200,
     featured: true,
+    allowCustomImages: true,
     options: [
        { name: 'Ribbon Color', values: ['Red', 'Gold', 'Silver', 'Blue'] },
        { name: 'Box Size', values: ['Small', 'Medium', 'Large'] }
@@ -68,6 +71,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800',
     stock: 150,
     featured: true,
+    allowCustomImages: true,
     options: [
       { name: 'Size', values: ['S', 'M', 'L', 'XL', 'XXL'] },
       { name: 'Color', values: ['Black', 'White', 'Navy Blue', 'Heather Grey', 'Maroon'] }
@@ -84,6 +88,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80&w=800',
     stock: 80,
     featured: true,
+    allowCustomImages: true,
     options: [
       { name: 'Size', values: ['XS', 'S', 'M', 'L', 'XL'] },
       { name: 'Color', values: ['Black', 'White', 'Pink', 'Lavender', 'Yellow'] }
@@ -100,6 +105,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=800',
     stock: 300,
     featured: true,
+    allowCustomImages: true,
     options: [
       { name: 'Size', values: ['A5 (5.8 x 8.3")', 'A4 (8.3 x 11.7")', 'A3 (11.7 x 16.5")', 'A2 (16.5 x 23.4")'] },
       { name: 'Material', values: ['Glossy Paper', 'Matte Paper', 'Canvas Texture'] }
@@ -116,6 +122,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&q=80&w=800',
     stock: 120,
     featured: true,
+    allowCustomImages: true,
     options: [
       { name: 'Base Color', values: ['White', 'Black'] },
       { name: 'Capacity', values: ['325ml (Standard)', '450ml (Large)'] }
@@ -132,6 +139,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&q=80&w=800',
     stock: 90,
     featured: true,
+    allowCustomImages: true,
     options: [
       { name: 'Frame Size', values: ['6x8" (A5)', '8x12" (A4)', '12x16" (A3)'] },
       { name: 'Material', values: ['Oak Wood', 'Black Metal', 'White Wood', 'Walnut'] },

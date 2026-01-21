@@ -116,6 +116,19 @@ const App: React.FC = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
 
+  // --- Admin Modal States ---
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+
+  const [showPromoModal, setShowPromoModal] = useState(false);
+  const [newPromoForm, setNewPromoForm] = useState({ title: '', content: '', type: 'banner' as 'banner' | 'popup' });
+
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [newDiscountForm, setNewDiscountForm] = useState({ code: '', value: 10, type: 'Percentage' });
+
+  const [showFaqModal, setShowFaqModal] = useState(false);
+  const [newFaqForm, setNewFaqForm] = useState({ q: '', a: '' });
+
   // --- User Profile ---
   const initialUserAddress = {
     name: '',
@@ -521,9 +534,14 @@ const App: React.FC = () => {
 
   // --- Admin Specific Logic ---
   const handleAddCategory = () => {
-    const name = prompt("Enter category name:");
-    if (name && !storeCategories.includes(name)) {
-      setStoreCategories([...storeCategories, name]);
+    setNewCategoryName('');
+    setShowCategoryModal(true);
+  };
+
+  const confirmAddCategory = () => {
+    if (newCategoryName && !storeCategories.includes(newCategoryName)) {
+      setStoreCategories([...storeCategories, newCategoryName]);
+      setShowCategoryModal(false);
       showToast("Category added");
     }
   };
@@ -537,6 +555,46 @@ const App: React.FC = () => {
 
   const handleTogglePromotion = (id: string) => {
     setPromotions(prev => prev.map(p => p.id === id ? { ...p, status: p.status === 'Active' ? 'Inactive' : 'Active' } : p));
+  };
+
+  const confirmAddPromotion = () => {
+    if (newPromoForm.title && newPromoForm.content) {
+      setPromotions([...promotions, { 
+        id: Date.now().toString(), 
+        type: newPromoForm.type, 
+        title: newPromoForm.title, 
+        content: newPromoForm.content, 
+        status: 'Active', 
+        displayRule: 'immediate', 
+        closable: true 
+      }]);
+      setShowPromoModal(false);
+      showToast("Promotion created");
+    } else {
+      showToast("Please fill in required fields");
+    }
+  };
+
+  const confirmAddDiscount = () => {
+    if (newDiscountForm.code) {
+      setDiscountCodes([...discountCodes, {
+        id: Date.now().toString(),
+        code: newDiscountForm.code.toUpperCase(),
+        type: newDiscountForm.type,
+        value: newDiscountForm.value,
+        status: 'Active'
+      }]);
+      setShowDiscountModal(false);
+      showToast("Coupon created");
+    }
+  };
+
+  const confirmAddFaq = () => {
+    if (newFaqForm.q && newFaqForm.a) {
+      setFaqs([...faqs, { id: Date.now().toString(), q: newFaqForm.q, a: newFaqForm.a }]);
+      setShowFaqModal(false);
+      showToast("FAQ added");
+    }
   };
 
   // --- New Admin Modules Renderers ---
@@ -627,11 +685,8 @@ const App: React.FC = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-black italic uppercase">Discount Codes</h2>
         <button onClick={() => {
-          const code = prompt("Enter promo code:");
-          if (code) {
-            setDiscountCodes([...discountCodes, { id: Date.now().toString(), code: code.toUpperCase(), type: 'Percentage', value: 10, status: 'Active' }]);
-            showToast("Promo code created");
-          }
+          setNewDiscountForm({ code: '', value: 10, type: 'Percentage' });
+          setShowDiscountModal(true);
         }} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:scale-105 transition">+ New Coupon</button>
       </div>
       <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100">
@@ -666,9 +721,8 @@ const App: React.FC = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-black italic uppercase">FAQ Management</h2>
         <button onClick={() => {
-          const q = prompt("Enter Question:");
-          const a = prompt("Enter Answer:");
-          if (q && a) setFaqs([...faqs, { id: Date.now().toString(), q, a }]);
+          setNewFaqForm({ q: '', a: '' });
+          setShowFaqModal(true);
         }} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:scale-105 transition">+ Add FAQ</button>
       </div>
       <div className="grid grid-cols-1 gap-4">
@@ -838,7 +892,7 @@ const App: React.FC = () => {
     <div className="animate-fade-in space-y-8">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-black italic uppercase">Editorial Control</h2>
-        <button className="bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:scale-105 transition">+ New Article</button>
+        <button onClick={() => showToast("Blog editor coming soon in v2.1")} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:scale-105 transition">+ New Article</button>
       </div>
       <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100">
         <table className="w-full text-left">
@@ -876,7 +930,7 @@ const App: React.FC = () => {
     <div className="animate-fade-in space-y-8">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-black italic uppercase">Custom Webpages</h2>
-        <button className="bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:scale-105 transition">+ Build Page</button>
+        <button onClick={() => showToast("Page builder coming soon")} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:scale-105 transition">+ Build Page</button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {customPages.map(p => (
@@ -899,7 +953,7 @@ const App: React.FC = () => {
     <div className="animate-fade-in space-y-8">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-black italic uppercase">Flash Sale Events</h2>
-        <button className="bg-red-500 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-red-600 transition">+ Ignite Sale</button>
+        <button onClick={() => showToast("Flash sale manager loading...")} className="bg-red-500 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase shadow-xl hover:bg-red-600 transition">+ Ignite Sale</button>
       </div>
       {flashSales.map(s => (
         <div key={s.id} className="bg-black text-white p-10 rounded-[48px] relative overflow-hidden shadow-2xl">
@@ -932,83 +986,73 @@ const App: React.FC = () => {
     </div>
   );
 
-  const renderAdminShippingTax = () => (
-    <div className="animate-fade-in space-y-12">
-      <h2 className="text-2xl font-black italic uppercase">Logistics & Compliance</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100 space-y-8">
-           <h3 className="text-sm font-black uppercase tracking-widest text-gray-400">Shipping Rules</h3>
-           <div className="space-y-6">
-              <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400">BASE DELIVERY FEE (₹)</label>
-                 <input type="number" value={settings.shippingFee} onChange={(e) => setSettings({...settings, shippingFee: Number(e.target.value)})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
-              </div>
-              <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400">FREE SHIPPING MINIMUM (₹)</label>
-                 <input type="number" value={settings.freeShippingThreshold} onChange={(e) => setSettings({...settings, freeShippingThreshold: Number(e.target.value)})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
-              </div>
-           </div>
-        </div>
-        <div className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100 space-y-8">
-           <h3 className="text-sm font-black uppercase tracking-widest text-gray-400">Financial Compliance</h3>
-           <div className="space-y-6">
-              <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400">GST / VAT RATE (%)</label>
-                 <input type="number" value={settings.taxRate} onChange={(e) => setSettings({...settings, taxRate: Number(e.target.value)})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
-              </div>
-              <div className="space-y-2">
-                 <label className="text-[10px] font-black text-gray-400">CURRENCY SYMBOL</label>
-                 <input type="text" value={settings.currency} onChange={(e) => setSettings({...settings, currency: e.target.value})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
-              </div>
-           </div>
-        </div>
-      </div>
-      <button onClick={() => showToast("Logistics database updated")} className="w-full bg-black text-white py-6 rounded-3xl font-black uppercase tracking-widest shadow-2xl hover:scale-[1.01] transition">Confirm Rules</button>
-    </div>
-  );
-
-  const renderAdminSegments = () => (
+  const renderAdminCategories = () => (
     <div className="animate-fade-in space-y-8">
-      <h2 className="text-2xl font-black italic uppercase">Customer Segments</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         {[
-           { label: 'High Value', count: 12, color: 'emerald' },
-           { label: 'Cart Abandoners', count: 45, color: 'orange' },
-           { label: 'New Signups', count: 89, color: 'blue' }
-         ].map(s => (
-           <div key={s.label} className="bg-white p-8 rounded-[40px] shadow-sm border border-gray-100 flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{s.label}</p>
-                <p className="text-3xl font-black">{s.count}</p>
-              </div>
-              <div className={`w-12 h-12 rounded-2xl bg-${s.color}-50 flex items-center justify-center text-${s.color}-500`}>
-                 <i className="fa-solid fa-users-viewfinder"></i>
-              </div>
-           </div>
-         ))}
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-black italic uppercase tracking-tighter">Collection Taxonomy</h2>
+        <button onClick={handleAddCategory} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 transition">+ Add Category</button>
       </div>
-      <div className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100">
-         <h3 className="text-xs font-black uppercase tracking-widest mb-6">Segmentation Breakdown</h3>
-         <div className="space-y-6">
-            <div className="flex items-center gap-4">
-               <div className="flex-1 h-3 bg-gray-50 rounded-full overflow-hidden flex">
-                  <div className="h-full bg-emerald-400 w-[40%]"></div>
-                  <div className="h-full bg-orange-400 w-[25%]"></div>
-                  <div className="h-full bg-blue-400 w-[35%]"></div>
+      <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100">
+        <div className="p-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {storeCategories.map(cat => (
+            <div key={cat} className="p-6 bg-gray-50 rounded-3xl border border-gray-100 flex items-center justify-between group hover:bg-white hover:border-black transition duration-300">
+               <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center border border-gray-100 shadow-sm text-gray-300 group-hover:text-black transition">
+                     <i className="fa-solid fa-folder-open"></i>
+                  </div>
+                  <span className="font-black text-sm uppercase tracking-tight italic">{cat}</span>
                </div>
+               <button onClick={() => handleRemoveCategory(cat)} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500 transition">
+                  <i className="fa-solid fa-trash-can text-xs"></i>
+               </button>
             </div>
-            <div className="flex gap-8">
-               <div className="flex items-center gap-2 text-[10px] font-black uppercase"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> Loyalists</div>
-               <div className="flex items-center gap-2 text-[10px] font-black uppercase"><div className="w-2 h-2 rounded-full bg-orange-400"></div> Prospects</div>
-               <div className="flex items-center gap-2 text-[10px] font-black uppercase"><div className="w-2 h-2 rounded-full bg-blue-400"></div> Passives</div>
-            </div>
-         </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 
-  // --- UI Renders ---
-  // Missing functions fix: Added missing renders for categories, customers, settings, promotions, order details, and checkout
+  const renderAdminPromotions = () => (
+    <div className="animate-fade-in space-y-8">
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-black italic uppercase tracking-tighter">Marketing Promos</h2>
+        <button onClick={() => {
+          setNewPromoForm({ title: '', content: '', type: 'banner' });
+          setShowPromoModal(true);
+        }} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 transition">+ New Campaign</button>
+      </div>
+      <div className="grid grid-cols-1 gap-6">
+        {promotions.map(p => (
+          <div key={p.id} className="bg-white p-8 rounded-[40px] shadow-sm border border-gray-100 flex items-center justify-between group hover:border-black transition duration-300">
+             <div className="flex items-center gap-6">
+                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400">
+                   <i className={`fa-solid ${p.type === 'banner' ? 'fa-window-maximize' : 'fa-rectangle-ad'} text-xl`}></i>
+                </div>
+                <div>
+                   <p className="font-black text-sm uppercase tracking-tight">{p.title}</p>
+                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 truncate max-w-md">{p.content}</p>
+                </div>
+             </div>
+             <div className="flex items-center gap-6">
+                <button 
+                  onClick={() => handleTogglePromotion(p.id)}
+                  className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition ${p.status === 'Active' ? 'bg-emerald-50 border-emerald-100 text-emerald-500' : 'bg-red-50 border-red-100 text-red-500'}`}
+                >
+                  {p.status}
+                </button>
+                <button onClick={() => {
+                  setPromotions(promotions.filter(item => item.id !== p.id));
+                  showToast("Promotion deleted");
+                }} className="text-gray-300 hover:text-red-500 transition p-2">
+                  <i className="fa-solid fa-trash-can"></i>
+                </button>
+             </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderOrderDetailUI = (order: Order, isAdmin: boolean = false) => (
     <div className="animate-fade-in space-y-8 pb-20">
       <div className="flex items-center justify-between">
@@ -1058,6 +1102,20 @@ const App: React.FC = () => {
                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">
                          {Object.entries(item.selectedOptions || {}).map(([k, v]) => `${k}: ${v}`).join(' | ')}
                        </p>
+                       
+                       {item.uploadedImages && item.uploadedImages.length > 0 && (
+                          <div className="flex gap-2 mb-3">
+                            {item.uploadedImages.map((img, i) => (
+                              <img 
+                                key={i} 
+                                src={img} 
+                                className="w-12 h-12 rounded-lg object-cover border border-gray-100 cursor-pointer hover:opacity-80" 
+                                onClick={() => setViewingCustomImage(img)}
+                              />
+                            ))}
+                          </div>
+                       )}
+
                        <div className="flex justify-between items-center">
                           <p className="text-xs font-bold text-gray-500">Qty: {item.quantity}</p>
                           <p className="font-black text-sm">₹{item.price * item.quantity}</p>
@@ -1124,32 +1182,6 @@ const App: React.FC = () => {
               </button>
             )}
           </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderAdminCategories = () => (
-    <div className="animate-fade-in space-y-8">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-black italic uppercase tracking-tighter">Collection Taxonomy</h2>
-        <button onClick={handleAddCategory} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 transition">+ Add Category</button>
-      </div>
-      <div className="bg-white rounded-[40px] overflow-hidden shadow-sm border border-gray-100">
-        <div className="p-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {storeCategories.map(cat => (
-            <div key={cat} className="p-6 bg-gray-50 rounded-3xl border border-gray-100 flex items-center justify-between group hover:bg-white hover:border-black transition duration-300">
-               <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center border border-gray-100 shadow-sm text-gray-300 group-hover:text-black transition">
-                     <i className="fa-solid fa-folder-open"></i>
-                  </div>
-                  <span className="font-black text-sm uppercase tracking-tight italic">{cat}</span>
-               </div>
-               <button onClick={() => handleRemoveCategory(cat)} className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-300 hover:text-red-500 transition">
-                  <i className="fa-solid fa-trash-can text-xs"></i>
-               </button>
-            </div>
-          ))}
         </div>
       </div>
     </div>
@@ -1238,46 +1270,199 @@ const App: React.FC = () => {
     </div>
   );
 
-  const renderAdminPromotions = () => (
-    <div className="animate-fade-in space-y-8">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-black italic uppercase tracking-tighter">Marketing Promos</h2>
-        <button onClick={() => {
-          const content = prompt("Banner content:");
-          if (content) {
-            setPromotions([...promotions, { id: Date.now().toString(), type: 'banner', title: 'New Promo', content, status: 'Active', displayRule: 'immediate', closable: true }]);
-            showToast("Promotion created");
-          }
-        }} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 transition">+ New Campaign</button>
+  const renderAdminShippingTax = () => (
+    <div className="animate-fade-in space-y-12">
+      <h2 className="text-2xl font-black italic uppercase">Logistics & Compliance</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100 space-y-8">
+           <h3 className="text-sm font-black uppercase tracking-widest text-gray-400">Shipping Rules</h3>
+           <div className="space-y-6">
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black text-gray-400">BASE DELIVERY FEE (₹)</label>
+                 <input type="number" value={settings.shippingFee} onChange={(e) => setSettings({...settings, shippingFee: Number(e.target.value)})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
+              </div>
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black text-gray-400">FREE SHIPPING MINIMUM (₹)</label>
+                 <input type="number" value={settings.freeShippingThreshold} onChange={(e) => setSettings({...settings, freeShippingThreshold: Number(e.target.value)})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
+              </div>
+           </div>
+        </div>
+        <div className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100 space-y-8">
+           <h3 className="text-sm font-black uppercase tracking-widest text-gray-400">Financial Compliance</h3>
+           <div className="space-y-6">
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black text-gray-400">GST / VAT RATE (%)</label>
+                 <input type="number" value={settings.taxRate} onChange={(e) => setSettings({...settings, taxRate: Number(e.target.value)})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
+              </div>
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black text-gray-400">CURRENCY SYMBOL</label>
+                 <input type="text" value={settings.currency} onChange={(e) => setSettings({...settings, currency: e.target.value})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
+              </div>
+           </div>
+        </div>
       </div>
-      <div className="grid grid-cols-1 gap-6">
-        {promotions.map(p => (
-          <div key={p.id} className="bg-white p-8 rounded-[40px] shadow-sm border border-gray-100 flex items-center justify-between group hover:border-black transition duration-300">
-             <div className="flex items-center gap-6">
-                <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400">
-                   <i className={`fa-solid ${p.type === 'banner' ? 'fa-window-maximize' : 'fa-rectangle-ad'} text-xl`}></i>
-                </div>
-                <div>
-                   <p className="font-black text-sm uppercase tracking-tight">{p.title}</p>
-                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 truncate max-w-md">{p.content}</p>
-                </div>
-             </div>
-             <div className="flex items-center gap-6">
-                <button 
-                  onClick={() => handleTogglePromotion(p.id)}
-                  className={`px-6 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest border transition ${p.status === 'Active' ? 'bg-emerald-50 border-emerald-100 text-emerald-500' : 'bg-red-50 border-red-100 text-red-500'}`}
-                >
-                  {p.status}
-                </button>
-                <button onClick={() => {
-                  setPromotions(promotions.filter(item => item.id !== p.id));
-                  showToast("Promotion deleted");
-                }} className="text-gray-300 hover:text-red-500 transition p-2">
-                  <i className="fa-solid fa-trash-can"></i>
-                </button>
-             </div>
+      <button onClick={() => showToast("Logistics database updated")} className="w-full bg-black text-white py-6 rounded-3xl font-black uppercase tracking-widest shadow-2xl hover:scale-[1.01] transition">Confirm Rules</button>
+    </div>
+  );
+
+  const renderAdminSegments = () => (
+    <div className="animate-fade-in space-y-8">
+      <h2 className="text-2xl font-black italic uppercase">Customer Segments</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         {[
+           { label: 'High Value', count: 12, color: 'emerald' },
+           { label: 'Cart Abandoners', count: 45, color: 'orange' },
+           { label: 'New Signups', count: 89, color: 'blue' }
+         ].map(s => (
+           <div key={s.label} className="bg-white p-8 rounded-[40px] shadow-sm border border-gray-100 flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{s.label}</p>
+                <p className="text-3xl font-black">{s.count}</p>
+              </div>
+              <div className={`w-12 h-12 rounded-2xl bg-${s.color}-50 flex items-center justify-center text-${s.color}-500`}>
+                 <i className="fa-solid fa-users-viewfinder"></i>
+              </div>
+           </div>
+         ))}
+      </div>
+      <div className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100">
+         <h3 className="text-xs font-black uppercase tracking-widest mb-6">Segmentation Breakdown</h3>
+         <div className="space-y-6">
+            <div className="flex items-center gap-4">
+               <div className="flex-1 h-3 bg-gray-50 rounded-full overflow-hidden flex">
+                  <div className="h-full bg-emerald-400 w-[40%]"></div>
+                  <div className="h-full bg-orange-400 w-[25%]"></div>
+                  <div className="h-full bg-blue-400 w-[35%]"></div>
+               </div>
+            </div>
+            <div className="flex gap-8">
+               <div className="flex items-center gap-2 text-[10px] font-black uppercase"><div className="w-2 h-2 rounded-full bg-emerald-400"></div> Loyalists</div>
+               <div className="flex items-center gap-2 text-[10px] font-black uppercase"><div className="w-2 h-2 rounded-full bg-orange-400"></div> Prospects</div>
+               <div className="flex items-center gap-2 text-[10px] font-black uppercase"><div className="w-2 h-2 rounded-full bg-blue-400"></div> Passives</div>
+            </div>
+         </div>
+      </div>
+    </div>
+  );
+
+  const renderHome = () => (
+    <div className="flex flex-col animate-slide-up">
+      <section className="relative h-[85vh] md:h-screen w-full bg-black overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=2000" className="w-full h-full object-cover opacity-60" alt="Hero" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+          <p className="text-white text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-6">PREMIUM QUALITY PRODUCTS</p>
+          <h1 className="text-6xl md:text-9xl font-[900] italic uppercase tracking-tighter text-white mb-12">FYX YOUR STYLE.</h1>
+          <button onClick={() => featuredRef.current?.scrollIntoView({ behavior: 'smooth' })} className="bg-white text-black px-12 py-4 rounded-full font-black text-xs uppercase tracking-[0.1em] shadow-2xl hover:bg-gray-100 transition">EXPLORE COLLECTION</button>
+        </div>
+      </section>
+
+      <section className="py-8 border-b border-gray-100 sticky top-14 md:top-16 bg-white/95 backdrop-blur-sm z-40 overflow-x-auto no-scrollbar">
+        <div className="flex space-x-6 px-6 pb-2 min-w-max">
+          <div onClick={() => setSelectedCategory('All')} className="flex flex-col items-center space-y-2 cursor-pointer">
+            <div className={`w-[70px] h-[70px] rounded-full border-2 p-1 ${selectedCategory === 'All' ? 'border-black' : 'border-gray-100'}`}>
+              <div className="w-full h-full bg-black rounded-full flex items-center justify-center text-white"><i className="fa-solid fa-star"></i></div>
+            </div>
+            <span className="text-[10px] font-bold uppercase">All</span>
           </div>
-        ))}
+          {storeCategories.map(cat => (
+            <div key={cat} onClick={() => setSelectedCategory(cat)} className="flex flex-col items-center space-y-2 cursor-pointer">
+              <div className={`w-[70px] h-[70px] rounded-full border-2 p-1 ${selectedCategory === cat ? 'border-black' : 'border-gray-100'}`}>
+                <img src={`https://picsum.photos/seed/${cat}/200/200`} className="w-full h-full rounded-full object-cover" />
+              </div>
+              <span className="text-[10px] font-bold uppercase">{cat.split(' ')[0]}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section ref={featuredRef} className="px-4 py-8 bg-gray-50 min-h-screen">
+         <div className="flex justify-between items-end mb-8 px-2">
+            <h2 className="text-2xl font-black italic uppercase tracking-tighter">{selectedCategory === 'All' ? 'Featured Collection' : selectedCategory}</h2>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="bg-white border text-xs font-bold uppercase rounded-lg px-3 py-2 outline-none">
+                 <option value="featured">Featured</option>
+                 <option value="price_low">Price: Low to High</option>
+                 <option value="price_high">Price: High to Low</option>
+            </select>
+         </div>
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {homeDisplayProducts.map(p => (
+              <div key={p.id} className="group cursor-pointer bg-white p-2 rounded-2xl shadow-sm hover:shadow-xl transition" onClick={() => { 
+                setSelectedProduct(p); 
+                setPDetailSelections({}); 
+                setPDetailQty(1); 
+                setUploadedImages([]);
+                setCurrentRoute(AppRoute.PRODUCT_DETAIL); 
+              }}>
+                <div className="aspect-[4/5] rounded-xl overflow-hidden relative mb-4">
+                    <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                    <button onClick={(e) => { e.stopPropagation(); if(isLoggedIn) setWishlist(prev => prev.includes(p.id) ? prev.filter(i => i !== p.id) : [...prev, p.id]); else setCurrentRoute(AppRoute.PROFILE); }} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
+                      <i className={`fa-${wishlist.includes(p.id) ? 'solid text-red-500' : 'regular'} fa-heart text-xs`}></i>
+                    </button>
+                    {p.discountBadge && <span className="absolute bottom-2 left-2 bg-black text-white text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest">{p.discountBadge}</span>}
+                </div>
+                <div className="px-2 pb-2">
+                    <h3 className="font-bold text-sm truncate uppercase tracking-tight">{p.name}</h3>
+                    <div className="flex items-center gap-2">
+                       <p className="font-black text-sm">₹{p.price}</p>
+                       {p.oldPrice && <p className="text-[10px] text-gray-400 line-through">₹{p.oldPrice}</p>}
+                    </div>
+                </div>
+              </div>
+            ))}
+         </div>
+      </section>
+    </div>
+  );
+
+  const renderSearch = () => (
+    <div className="p-6 bg-gray-50 min-h-screen animate-slide-up">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <h2 className="text-3xl font-black italic uppercase tracking-tighter">Find Your Product</h2>
+        <div className="relative">
+          <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input 
+            type="text" 
+            autoFocus
+            value={searchQuery} 
+            onChange={(e) => setSearchQuery(e.target.value)} 
+            placeholder="Search by name or category..." 
+            className="w-full bg-white border border-gray-200 rounded-2xl py-5 pl-12 pr-6 text-sm font-bold shadow-sm outline-none focus:border-black transition"
+          />
+        </div>
+
+        {!searchQuery.trim() ? (
+          <div className="text-center py-20 opacity-30">
+            <i className="fa-solid fa-wand-magic-sparkles text-5_5xl mb-4"></i>
+            <p className="text-xs font-black uppercase tracking-widest">Awaiting Input...</p>
+          </div>
+        ) : filteredSearchResults.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-gray-400 font-bold uppercase tracking-widest">No matching results found.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+            {filteredSearchResults.map(p => (
+              <div key={p.id} className="group cursor-pointer bg-white p-2 rounded-2xl shadow-sm hover:shadow-xl transition" onClick={() => { 
+                setSelectedProduct(p); 
+                setPDetailSelections({}); 
+                setPDetailQty(1); 
+                setUploadedImages([]);
+                setCurrentRoute(AppRoute.PRODUCT_DETAIL); 
+              }}>
+                <div className="aspect-[4/5] rounded-xl overflow-hidden relative mb-4">
+                  <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition" />
+                  <button onClick={(e) => { e.stopPropagation(); if(isLoggedIn) setWishlist(prev => prev.includes(p.id) ? prev.filter(i => i !== p.id) : [...prev, p.id]); else setCurrentRoute(AppRoute.PROFILE); }} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
+                    <i className={`fa-${wishlist.includes(p.id) ? 'solid text-red-500' : 'regular'} fa-heart text-xs`}></i>
+                  </button>
+                </div>
+                <div className="px-2 pb-2">
+                  <h3 className="font-bold text-sm truncate uppercase tracking-tight">{p.name}</h3>
+                  <p className="font-black text-sm">₹{p.price}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1403,128 +1588,6 @@ const App: React.FC = () => {
               >
                 Place Final Order
              </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderHome = () => (
-    <div className="flex flex-col animate-slide-up">
-      <section className="relative h-[85vh] md:h-screen w-full bg-black overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=2000" className="w-full h-full object-cover opacity-60" alt="Hero" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <p className="text-white text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-6">PREMIUM QUALITY PRODUCTS</p>
-          <h1 className="text-6xl md:text-9xl font-[900] italic uppercase tracking-tighter text-white mb-12">FYX YOUR STYLE.</h1>
-          <button onClick={() => featuredRef.current?.scrollIntoView({ behavior: 'smooth' })} className="bg-white text-black px-12 py-4 rounded-full font-black text-xs uppercase tracking-[0.1em] shadow-2xl hover:bg-gray-100 transition">EXPLORE COLLECTION</button>
-        </div>
-      </section>
-
-      <section className="py-8 border-b border-gray-100 sticky top-14 md:top-16 bg-white/95 backdrop-blur-sm z-40 overflow-x-auto no-scrollbar">
-        <div className="flex space-x-6 px-6 pb-2 min-w-max">
-          <div onClick={() => setSelectedCategory('All')} className="flex flex-col items-center space-y-2 cursor-pointer">
-            <div className={`w-[70px] h-[70px] rounded-full border-2 p-1 ${selectedCategory === 'All' ? 'border-black' : 'border-gray-100'}`}>
-              <div className="w-full h-full bg-black rounded-full flex items-center justify-center text-white"><i className="fa-solid fa-star"></i></div>
-            </div>
-            <span className="text-[10px] font-bold uppercase">All</span>
-          </div>
-          {storeCategories.map(cat => (
-            <div key={cat} onClick={() => setSelectedCategory(cat)} className="flex flex-col items-center space-y-2 cursor-pointer">
-              <div className={`w-[70px] h-[70px] rounded-full border-2 p-1 ${selectedCategory === cat ? 'border-black' : 'border-gray-100'}`}>
-                <img src={`https://picsum.photos/seed/${cat}/200/200`} className="w-full h-full rounded-full object-cover" />
-              </div>
-              <span className="text-[10px] font-bold uppercase">{cat.split(' ')[0]}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section ref={featuredRef} className="px-4 py-8 bg-gray-50 min-h-screen">
-         <div className="flex justify-between items-end mb-8 px-2">
-            <h2 className="text-2xl font-black italic uppercase tracking-tighter">{selectedCategory === 'All' ? 'Featured Collection' : selectedCategory}</h2>
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="bg-white border text-xs font-bold uppercase rounded-lg px-3 py-2 outline-none">
-                 <option value="featured">Featured</option>
-                 <option value="price_low">Price: Low to High</option>
-                 <option value="price_high">Price: High to Low</option>
-            </select>
-         </div>
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {homeDisplayProducts.map(p => (
-              <div key={p.id} className="group cursor-pointer bg-white p-2 rounded-2xl shadow-sm hover:shadow-xl transition" onClick={() => { 
-                setSelectedProduct(p); 
-                setPDetailSelections({}); 
-                setPDetailQty(1); 
-                setUploadedImages([]);
-                setCurrentRoute(AppRoute.PRODUCT_DETAIL); 
-              }}>
-                <div className="aspect-[4/5] rounded-xl overflow-hidden relative mb-4">
-                    <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition" />
-                    <button onClick={(e) => { e.stopPropagation(); if(isLoggedIn) setWishlist(prev => prev.includes(p.id) ? prev.filter(i => i !== p.id) : [...prev, p.id]); else setCurrentRoute(AppRoute.PROFILE); }} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
-                      <i className={`fa-${wishlist.includes(p.id) ? 'solid text-red-500' : 'regular'} fa-heart text-xs`}></i>
-                    </button>
-                    {p.discountBadge && <span className="absolute bottom-2 left-2 bg-black text-white text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest">{p.discountBadge}</span>}
-                </div>
-                <div className="px-2 pb-2">
-                    <h3 className="font-bold text-sm truncate uppercase tracking-tight">{p.name}</h3>
-                    <div className="flex items-center gap-2">
-                       <p className="font-black text-sm">₹{p.price}</p>
-                       {p.oldPrice && <p className="text-[10px] text-gray-400 line-through">₹{p.oldPrice}</p>}
-                    </div>
-                </div>
-              </div>
-            ))}
-         </div>
-      </section>
-    </div>
-  );
-
-  const renderSearch = () => (
-    <div className="p-6 bg-gray-50 min-h-screen animate-slide-up">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <h2 className="text-3xl font-black italic uppercase tracking-tighter">Find Your Product</h2>
-        <div className="relative">
-          <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-          <input 
-            type="text" 
-            autoFocus
-            value={searchQuery} 
-            onChange={(e) => setSearchQuery(e.target.value)} 
-            placeholder="Search by name or category..." 
-            className="w-full bg-white border border-gray-200 rounded-2xl py-5 pl-12 pr-6 text-sm font-bold shadow-sm outline-none focus:border-black transition"
-          />
-        </div>
-
-        {!searchQuery.trim() ? (
-          <div className="text-center py-20 opacity-30">
-            <i className="fa-solid fa-wand-magic-sparkles text-5_5xl mb-4"></i>
-            <p className="text-xs font-black uppercase tracking-widest">Awaiting Input...</p>
-          </div>
-        ) : filteredSearchResults.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-gray-400 font-bold uppercase tracking-widest">No matching results found.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
-            {filteredSearchResults.map(p => (
-              <div key={p.id} className="group cursor-pointer bg-white p-2 rounded-2xl shadow-sm hover:shadow-xl transition" onClick={() => { 
-                setSelectedProduct(p); 
-                setPDetailSelections({}); 
-                setPDetailQty(1); 
-                setUploadedImages([]);
-                setCurrentRoute(AppRoute.PRODUCT_DETAIL); 
-              }}>
-                <div className="aspect-[4/5] rounded-xl overflow-hidden relative mb-4">
-                  <img src={p.image} className="w-full h-full object-cover group-hover:scale-105 transition" />
-                  <button onClick={(e) => { e.stopPropagation(); if(isLoggedIn) setWishlist(prev => prev.includes(p.id) ? prev.filter(i => i !== p.id) : [...prev, p.id]); else setCurrentRoute(AppRoute.PROFILE); }} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
-                    <i className={`fa-${wishlist.includes(p.id) ? 'solid text-red-500' : 'regular'} fa-heart text-xs`}></i>
-                  </button>
-                </div>
-                <div className="px-2 pb-2">
-                  <h3 className="font-bold text-sm truncate uppercase tracking-tight">{p.name}</h3>
-                  <p className="font-black text-sm">₹{p.price}</p>
-                </div>
-              </div>
-            ))}
           </div>
         )}
       </div>
@@ -1701,7 +1764,7 @@ const App: React.FC = () => {
                     <div>
                       <h2 className="text-3xl font-black italic uppercase tracking-tighter">Inventory Control</h2>
                     </div>
-                    <button onClick={() => { setEditingProduct({ id: Date.now().toString(), name: '', price: 0, category: storeCategories[0], image: '', stock: 100, description: '', options: [] }); setShowProductModal(true); }} className="bg-[#1a1614] text-white px-10 py-5 rounded-3xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:scale-105 hover:bg-black transition duration-300">+ Add New Asset</button>
+                    <button onClick={() => { setEditingProduct({ id: Date.now().toString(), name: '', price: 0, category: storeCategories[0], image: '', stock: 100, description: '', options: [], allowCustomImages: true }); setShowProductModal(true); }} className="bg-[#1a1614] text-white px-10 py-5 rounded-3xl font-black text-[11px] uppercase tracking-widest shadow-2xl hover:scale-105 hover:bg-black transition duration-300">+ Add New Asset</button>
                  </div>
                  <div className="bg-white rounded-[48px] overflow-hidden shadow-2xl border border-gray-100">
                     <table className="w-full text-left">
@@ -1873,11 +1936,11 @@ const App: React.FC = () => {
                   </div>
                 ))}
 
-                {/* FIX: Restored the Custom Image Upload UI for storefront with limit increased to 20 */}
+                {/* FIX: Restored the Custom Image Upload UI for storefront */}
                 {selectedProduct.allowCustomImages && (
                   <div className="space-y-4">
                     <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Upload Custom Designs</p>
-                    <div className="grid grid-cols-4 md:grid-cols-5 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
                       {uploadedImages.map((img, idx) => (
                         <div key={idx} className="aspect-square rounded-xl overflow-hidden relative group border border-gray-100 shadow-sm">
                           <img src={img} className="w-full h-full object-cover" />
@@ -1889,7 +1952,7 @@ const App: React.FC = () => {
                           </button>
                         </div>
                       ))}
-                      {uploadedImages.length < 20 && (
+                      {uploadedImages.length < 4 && (
                         <label className="aspect-square rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-black transition group">
                           <input 
                             type="file" 
@@ -1897,14 +1960,16 @@ const App: React.FC = () => {
                             accept="image/*" 
                             className="hidden" 
                             onChange={(e) => {
-                              const files = Array.from(e.target.files || []);
-                              files.forEach(file => {
-                                const reader = new FileReader();
-                                reader.onloadend = () => {
-                                  setUploadedImages(prev => [...prev, reader.result as string].slice(0, 20));
-                                };
-                                reader.readAsDataURL(file);
-                              });
+                              // Fixed: Explicitly handle FileList to prevent 'unknown' type inference on file iteration
+                              if (e.target.files) {
+                                Array.from(e.target.files).forEach(file => {
+                                  const reader = new FileReader();
+                                  reader.onloadend = () => {
+                                    setUploadedImages(prev => [...prev, reader.result as string].slice(0, 4));
+                                  };
+                                  reader.readAsDataURL(file);
+                                });
+                              }
                             }}
                           />
                           <i className="fa-solid fa-plus text-gray-300 group-hover:text-black transition"></i>
@@ -1945,6 +2010,110 @@ const App: React.FC = () => {
               <img src={viewingCustomImage} className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl" alt="Customization" />
               <button onClick={() => setViewingCustomImage(null)} className="absolute -top-12 right-0 text-white text-3xl hover:opacity-70"><i className="fa-solid fa-xmark"></i></button>
            </div>
+        </div>
+      )}
+
+      {showCategoryModal && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[40px] p-10 w-full max-w-lg shadow-2xl space-y-6 animate-slide-up">
+            <h2 className="text-2xl font-[900] italic uppercase tracking-tighter">NEW CATEGORY</h2>
+            <div className="space-y-2">
+               <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">CATEGORY NAME</label>
+               <input 
+                 type="text" 
+                 value={newCategoryName}
+                 onChange={(e) => setNewCategoryName(e.target.value)}
+                 className="w-full bg-gray-50 p-5 rounded-2xl font-bold outline-none focus:ring-2 focus:ring-black transition" 
+                 placeholder="e.g. Hoodies"
+               />
+            </div>
+            <div className="flex gap-4 pt-4">
+               <button onClick={() => setShowCategoryModal(false)} className="flex-1 py-4 font-bold uppercase text-xs border border-gray-100 rounded-2xl hover:bg-gray-50 transition">Cancel</button>
+               <button onClick={confirmAddCategory} className="flex-1 bg-black text-white py-4 font-[900] uppercase text-xs rounded-2xl shadow-xl hover:scale-[1.02] transition">Create</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPromoModal && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[40px] p-10 w-full max-w-lg shadow-2xl space-y-6 animate-slide-up">
+            <h2 className="text-2xl font-[900] italic uppercase tracking-tighter">NEW CAMPAIGN</h2>
+            <div className="space-y-4">
+               <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">TITLE</label>
+                 <input type="text" value={newPromoForm.title} onChange={(e) => setNewPromoForm({...newPromoForm, title: e.target.value})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
+               </div>
+               <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">CONTENT</label>
+                 <textarea value={newPromoForm.content} onChange={(e) => setNewPromoForm({...newPromoForm, content: e.target.value})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" rows={3} />
+               </div>
+               <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">TYPE</label>
+                 <select value={newPromoForm.type} onChange={(e) => setNewPromoForm({...newPromoForm, type: e.target.value as any})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none">
+                    <option value="banner">Banner (Top Bar)</option>
+                    <option value="popup">Popup (Modal)</option>
+                 </select>
+               </div>
+            </div>
+            <div className="flex gap-4 pt-4">
+               <button onClick={() => setShowPromoModal(false)} className="flex-1 py-4 font-bold uppercase text-xs border border-gray-100 rounded-2xl hover:bg-gray-50 transition">Cancel</button>
+               <button onClick={confirmAddPromotion} className="flex-1 bg-black text-white py-4 font-[900] uppercase text-xs rounded-2xl shadow-xl hover:scale-[1.02] transition">Launch</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDiscountModal && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[40px] p-10 w-full max-w-lg shadow-2xl space-y-6 animate-slide-up">
+            <h2 className="text-2xl font-[900] italic uppercase tracking-tighter">NEW COUPON</h2>
+            <div className="space-y-4">
+               <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">CODE</label>
+                 <input type="text" value={newDiscountForm.code} onChange={(e) => setNewDiscountForm({...newDiscountForm, code: e.target.value.toUpperCase()})} className="w-full bg-gray-50 p-4 rounded-xl font-black text-lg outline-none uppercase tracking-widest" placeholder="SALE2025" />
+               </div>
+               <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-2">
+                   <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">TYPE</label>
+                   <select value={newDiscountForm.type} onChange={(e) => setNewDiscountForm({...newDiscountForm, type: e.target.value})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none">
+                      <option value="Percentage">Percentage (%)</option>
+                      <option value="Flat">Flat Amount (₹)</option>
+                   </select>
+                 </div>
+                 <div className="space-y-2">
+                   <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">VALUE</label>
+                   <input type="number" value={newDiscountForm.value} onChange={(e) => setNewDiscountForm({...newDiscountForm, value: Number(e.target.value)})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
+                 </div>
+               </div>
+            </div>
+            <div className="flex gap-4 pt-4">
+               <button onClick={() => setShowDiscountModal(false)} className="flex-1 py-4 font-bold uppercase text-xs border border-gray-100 rounded-2xl hover:bg-gray-50 transition">Cancel</button>
+               <button onClick={confirmAddDiscount} className="flex-1 bg-black text-white py-4 font-[900] uppercase text-xs rounded-2xl shadow-xl hover:scale-[1.02] transition">Create Coupon</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFaqModal && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[40px] p-10 w-full max-w-lg shadow-2xl space-y-6 animate-slide-up">
+            <h2 className="text-2xl font-[900] italic uppercase tracking-tighter">ADD FAQ</h2>
+            <div className="space-y-4">
+               <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">QUESTION</label>
+                 <input type="text" value={newFaqForm.q} onChange={(e) => setNewFaqForm({...newFaqForm, q: e.target.value})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" />
+               </div>
+               <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase text-gray-400 tracking-widest">ANSWER</label>
+                 <textarea value={newFaqForm.a} onChange={(e) => setNewFaqForm({...newFaqForm, a: e.target.value})} className="w-full bg-gray-50 p-4 rounded-xl font-bold outline-none" rows={4} />
+               </div>
+            </div>
+            <div className="flex gap-4 pt-4">
+               <button onClick={() => setShowFaqModal(false)} className="flex-1 py-4 font-bold uppercase text-xs border border-gray-100 rounded-2xl hover:bg-gray-50 transition">Cancel</button>
+               <button onClick={confirmAddFaq} className="flex-1 bg-black text-white py-4 font-[900] uppercase text-xs rounded-2xl shadow-xl hover:scale-[1.02] transition">Add Entry</button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -2123,20 +2292,6 @@ const App: React.FC = () => {
                 ))}
               </div>
 
-              {/* FIX: Added toggle option to enable/disable custom image uploads for the product */}
-              <div className="flex items-center justify-between bg-[#F8F9FA] p-5 rounded-2xl">
-                  <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">Allow Customer Image Uploads</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                      <input 
-                          type="checkbox" 
-                          checked={editingProduct?.allowCustomImages || false} 
-                          onChange={(e) => setEditingProduct(p => p ? ({...p, allowCustomImages: e.target.checked}) : null)} 
-                          className="sr-only peer" 
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
-                  </label>
-              </div>
-
               {/* Action Buttons */}
               <div className="flex gap-6 pt-10 sticky bottom-0 bg-white pb-2 z-20">
                  <button 
@@ -2147,4 +2302,32 @@ const App: React.FC = () => {
                   </button>
                  <button 
                     onClick={() => { 
-                      setProducts(prev => prev.some(p =>
+                      setProducts(prev => prev.some(p => p.id === editingProduct?.id) ? prev.map(p => p.id === editingProduct?.id ? editingProduct! : p) : [...prev, editingProduct!]); 
+                      setShowProductModal(false); 
+                      showToast("Inventory synchronized"); 
+                    }} 
+                    className="flex-1 bg-black text-white py-5 font-[900] uppercase text-[12px] rounded-3xl shadow-2xl hover:scale-[1.02] transition tracking-[0.1em]"
+                  >
+                    SAVE PRODUCT
+                  </button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {showProofModal && (
+        <div className="fixed inset-0 bg-black/90 z-[120] flex items-center justify-center p-4 md:p-10 animate-fade-in" onClick={() => setShowProofModal(null)}>
+           <div className="relative max-w-4xl max-h-full">
+              <img src={showProofModal} className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl" alt="Proof" />
+              <button onClick={() => setShowProofModal(null)} className="absolute -top-12 right-0 text-white text-3xl hover:opacity-70"><i className="fa-solid fa-xmark"></i></button>
+           </div>
+        </div>
+      )}
+
+      {toast.visible && (<div className="fixed top-24 right-6 bg-black text-white px-6 py-4 rounded-2xl shadow-2xl z-[110] flex items-center space-x-3 animate-slide-in-right border border-white/10"><div className="w-1 h-1 bg-green-500 rounded-full animate-pulse"></div><span className="text-[10px] font-black uppercase tracking-widest">{toast.message}</span></div>)}
+      <AIChatBubble />
+    </>
+  );
+};
+
+export default App;
