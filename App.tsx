@@ -402,8 +402,8 @@ const App: React.FC = () => {
 
   const handleUpdateOrderStatus = (id: string, status: any) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
-    if (viewingOrder?.id === id) setViewingOrder(prev => prev ? { ...prev, status } : null);
-    if (adminViewingOrder?.id === id) setAdminViewingOrder(prev => prev ? { ...prev, status } : null);
+    setViewingOrder(prev => (prev && prev.id === id ? { ...prev, status } : prev));
+    setAdminViewingOrder(prev => (prev && prev.id === id ? { ...prev, status } : prev));
     showToast(`Order status updated to ${status}`);
   };
 
@@ -521,8 +521,8 @@ const App: React.FC = () => {
   const handleCancelOrder = (id: string) => {
     if (!window.confirm("Are you sure you want to cancel this order? This action cannot be undone.")) return;
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status: 'cancelled' } : o));
-    if (viewingOrder?.id === id) setViewingOrder(prev => prev ? { ...prev, status: 'cancelled' } : null);
-    if (adminViewingOrder?.id === id) setAdminViewingOrder(prev => prev ? { ...prev, status: 'cancelled' } : null);
+    setViewingOrder(prev => (prev && prev.id === id ? { ...prev, status: 'cancelled' } : prev));
+    setAdminViewingOrder(prev => (prev && prev.id === id ? { ...prev, status: 'cancelled' } : prev));
     showToast("Order has been cancelled successfully");
   };
 
