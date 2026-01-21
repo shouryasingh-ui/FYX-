@@ -1,4 +1,3 @@
-
 import { Product } from './types';
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -17,6 +16,10 @@ export const INITIAL_PRODUCTS: Product[] = [
     options: [
       { name: 'Paper Finish', values: ['Glossy', 'Matte'] },
       { name: 'Pages', values: ['20 Pages', '40 Pages', '60 Pages'] }
+    ],
+    reviews: [
+      { id: 'r1', userName: 'Aditi Sharma', rating: 5, text: 'Absolutely loved the print quality!', date: '2 days ago' },
+      { id: 'r2', userName: 'Rohan Gupta', rating: 4, text: 'Great delivery speed, paper is nice.', date: '1 week ago' }
     ]
   },
   {
@@ -33,6 +36,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     options: [
       { name: 'Phone Model', values: ['iPhone 13', 'iPhone 14', 'iPhone 15', 'iPhone 15 Pro', 'Samsung S23', 'Samsung S24'] },
       { name: 'Finish', values: ['Matte', 'Glossy', 'Transparent'] }
+    ],
+    reviews: [
+      { id: 'r3', userName: 'Mike T.', rating: 5, text: 'Fits perfectly.', date: '3 days ago' }
     ]
   },
   {

@@ -1,7 +1,14 @@
-
 export interface ProductOption {
   name: string;
   values: string[];
+}
+
+export interface Review {
+  id: string;
+  userName: string;
+  rating: number;
+  text: string;
+  date: string;
 }
 
 export interface Product {
@@ -17,6 +24,7 @@ export interface Product {
   featured?: boolean;
   options?: ProductOption[];
   allowCustomImages?: boolean;
+  reviews?: Review[];
 }
 
 export interface CartItem extends Product {
@@ -32,7 +40,7 @@ export interface Order {
   items: CartItem[];
   total: number;
   shipping: number;
-  status: 'confirmed' | 'processing' | 'shipped' | 'delivered';
+  status: 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   date: string;
   time: string;
   address: string;
@@ -44,8 +52,23 @@ export interface Order {
   };
 }
 
+export interface Promotion {
+  id: string;
+  type: 'popup' | 'banner';
+  title: string;
+  content: string;
+  image?: string;
+  ctaText?: string;
+  ctaLink?: string; // Route or URL
+  status: 'Active' | 'Inactive';
+  displayRule: 'immediate' | 'delay' | 'exit-intent';
+  delaySeconds?: number;
+  closable: boolean;
+}
+
 export enum AppRoute {
   STORE = 'store',
+  SEARCH = 'search',
   PRODUCT_DETAIL = 'product-detail',
   CART = 'cart',
   CHECKOUT = 'checkout',

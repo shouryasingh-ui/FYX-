@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { chatWithCustomer } from '../services/geminiService';
 
@@ -30,7 +29,11 @@ const AIChatBubble: React.FC = () => {
     setMessages(prev => [...prev, { text: userMsg, sender: 'user' }]);
     setIsTyping(true);
 
-    const response = await chatWithCustomer(userMsg, "The customer is currently browsing the storefront.");
+    // Get current page context safely
+    const currentPage = window.location.pathname; 
+    const context = `The customer is currently browsing the page: ${currentPage}.`;
+
+    const response = await chatWithCustomer(userMsg, context);
     setMessages(prev => [...prev, { text: response, sender: 'bot' }]);
     setIsTyping(false);
   };
@@ -42,7 +45,7 @@ const AIChatBubble: React.FC = () => {
           <div className="bg-gray-900 p-4 text-white flex justify-between items-center">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="font-semibold">AI Concierge</span>
+              <span className="font-semibold">FYX AI Support</span>
             </div>
             <button onClick={() => setIsOpen(false)} className="hover:text-gray-300 transition">
               <i className="fa-solid fa-xmark"></i>

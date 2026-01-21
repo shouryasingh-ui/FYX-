@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { AppRoute } from '../types';
+import { AppRoute, Promotion } from '../types';
 
 interface StorefrontLayoutProps {
   children: React.ReactNode;
@@ -8,6 +7,8 @@ interface StorefrontLayoutProps {
   cartCount: number;
   wishlistCount: number;
   currentRoute: AppRoute;
+  activeBanner?: Promotion | null;
+  onCloseBanner?: () => void;
 }
 
 const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({ 
@@ -15,14 +16,15 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
   onNavigate, 
   cartCount, 
   wishlistCount,
-  currentRoute 
+  currentRoute,
+  activeBanner,
+  onCloseBanner
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Bottom Navigation Items
   const navItems = [
     { icon: 'fa-house', label: 'Home', route: AppRoute.STORE },
-    { icon: 'fa-magnifying-glass', label: 'Search', route: AppRoute.STORE }, // Maps to store for now, effectively "Browse"
+    { icon: 'fa-magnifying-glass', label: 'Search', route: AppRoute.SEARCH },
     { icon: 'fa-heart', label: 'Wishlist', route: AppRoute.WISHLIST, count: wishlistCount },
     { icon: 'fa-bag-shopping', label: 'Bag', route: AppRoute.CART, count: cartCount },
     { icon: 'fa-user', label: 'Account', route: AppRoute.PROFILE },
@@ -30,24 +32,46 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans relative">
-      
-      {/* Top Header (Desktop & Mobile) */}
+      {activeBanner && (
+        <div className="bg-black text-white text-[10px] md:text-xs font-bold py-2.5 px-4 text-center relative tracking-widest uppercase animate-slide-up z-[61]">
+           <div className="max-w-7xl mx-auto flex justify-center items-center gap-2">
+              <span className="truncate">{activeBanner.content}</span>
+              {activeBanner.ctaText && (
+                <button 
+                  onClick={() => onNavigate(AppRoute.STORE)} 
+                  className="underline ml-1 hover:no-underline"
+                >
+                  {activeBanner.ctaText}
+                </button>
+              )}
+           </div>
+           {activeBanner.closable && (
+             <button 
+               onClick={onCloseBanner}
+               className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:opacity-70"
+             >
+               <i className="fa-solid fa-xmark text-sm"></i>
+             </button>
+           )}
+        </div>
+      )}
+
       <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-[60] border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center cursor-pointer" onClick={() => onNavigate(AppRoute.STORE)}>
             <span className="text-2xl font-[900] tracking-tighter text-black uppercase italic">FYX.</span>
           </div>
 
-          {/* Desktop Nav Links */}
           <div className="hidden md:flex items-center space-x-8 text-sm font-bold text-gray-500 uppercase tracking-widest">
             <button onClick={() => onNavigate(AppRoute.STORE)} className="hover:text-black transition">Shop</button>
-            <button onClick={() => onNavigate(AppRoute.STORE)} className="hover:text-black transition">About</button>
+            <button onClick={() => onNavigate(AppRoute.SEARCH)} className="hover:text-black transition">Search</button>
             <button onClick={() => onNavigate(AppRoute.PROFILE)} className="hover:text-black transition">Support</button>
           </div>
           
-          {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-6">
+            <button onClick={() => onNavigate(AppRoute.SEARCH)} className="hover:opacity-60 transition">
+              <i className="fa-solid fa-magnifying-glass text-xl"></i>
+            </button>
             <button onClick={() => onNavigate(AppRoute.WISHLIST)} className="relative hover:opacity-60 transition">
               <i className="fa-regular fa-heart text-xl"></i>
               {wishlistCount > 0 && <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{wishlistCount}</span>}
@@ -61,7 +85,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
             </button>
           </div>
 
-          {/* Mobile Cart Icon (Top Right) */}
           <div className="md:hidden">
              <button onClick={() => onNavigate(AppRoute.CART)} className="relative p-2">
               <i className="fa-solid fa-bag-shopping text-xl"></i>
@@ -71,12 +94,10 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="flex-grow animate-fade-in">
         {children}
       </main>
 
-      {/* Newsletter Section */}
       <section className="bg-[#f8f8f8] py-20 px-6 relative overflow-hidden border-t border-gray-100">
          <div className="max-w-3xl mx-auto text-center relative z-10">
             <div className="w-16 h-16 bg-[#e5e5e5] rounded-2xl flex items-center justify-center mx-auto mb-6 rotate-3">
@@ -114,15 +135,12 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
             </div>
          </div>
          
-         {/* Decorative Background Elements */}
          <div className="absolute top-0 left-0 w-64 h-64 bg-gray-200 rounded-full blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
          <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#d9c5b2] rounded-full blur-3xl opacity-20 translate-x-1/2 translate-y-1/2"></div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-[#1a1614] text-white pt-20 pb-24 md:pb-10 px-6 sm:px-10 lg:px-24">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          {/* Brand Column */}
           <div className="space-y-6">
             <h3 className="text-4xl font-black tracking-tighter italic">FYX.</h3>
             <p className="text-gray-400 text-sm font-medium leading-relaxed">
@@ -137,7 +155,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
             </div>
           </div>
 
-          {/* Shop Column */}
           <div>
             <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-[#9d938b] mb-8">Shop</h4>
             <ul className="space-y-4 text-gray-400 text-sm font-medium">
@@ -147,7 +164,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
             </ul>
           </div>
 
-          {/* Help Column */}
           <div>
             <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-[#9d938b] mb-8">Help</h4>
             <ul className="space-y-4 text-gray-400 text-sm font-medium">
@@ -159,7 +175,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
             </ul>
           </div>
 
-          {/* Stay Updated Column */}
           <div>
             <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-[#9d938b] mb-8">Stay Updated</h4>
             <p className="text-gray-400 text-sm mb-6">Subscribe for exclusive offers and updates.</p>
@@ -176,7 +191,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
           </div>
         </div>
 
-        {/* Footer Bottom */}
         <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase text-gray-500 gap-4">
           <p>© 2025 FYX. All rights reserved. | Secure payments with SSL encryption</p>
           <div className="flex space-x-6">
@@ -186,7 +200,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
         </div>
       </footer>
 
-      {/* Mobile Bottom Navigation Bar - The "App" Feel */}
       <div className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 z-[80] pb-safe">
         <div className="flex justify-around items-center h-16">
           {navItems.map((item) => {
@@ -212,7 +225,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
         </div>
       </div>
 
-      {/* Floating Buttons (Hidden on mobile to avoid cluttering nav) */}
       <div className="hidden md:flex fixed bottom-10 right-10 z-[70] flex-col space-y-4">
         <button className="w-14 h-14 bg-black text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition">
           <i className="fa-brands fa-whatsapp text-2xl"></i>

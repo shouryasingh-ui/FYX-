@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { AppRoute } from '../types';
 
@@ -42,7 +41,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onNavigate, current
 
   return (
     <div className="flex min-h-screen bg-[#f1f1f1] relative">
-      {/* Sidebar Overlay for Mobile */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[40] lg:hidden transition-opacity"
@@ -50,14 +48,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onNavigate, current
         ></div>
       )}
 
-      {/* Sidebar */}
       <aside className={`
         fixed h-full z-[50] w-[280px] bg-[#1a1614] text-[#9d938b] flex flex-col 
         transition-transform duration-300 ease-in-out border-r border-[#2d2621]
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         <div className="p-6 flex flex-col h-full overflow-y-auto no-scrollbar">
-          {/* Top Navigation Back to Store */}
           <div className="flex items-center justify-between mb-8 lg:hidden">
             <span className="text-2xl font-black text-white tracking-tighter italic">FYX.</span>
             <button onClick={() => setIsSidebarOpen(false)} className="text-white p-2 text-xl">
@@ -116,9 +112,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onNavigate, current
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <main className="flex-1 lg:ml-[280px] min-h-screen flex flex-col">
-        {/* Mobile Header */}
         <header className="lg:hidden h-20 bg-white border-b flex items-center justify-between px-6 sticky top-0 z-[30]">
           <div className="flex items-center space-x-4">
             <button 
@@ -136,7 +130,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onNavigate, current
           </div>
         </header>
 
-        {/* Desktop Title Bar (Optional but nice) */}
         <header className="hidden lg:flex h-24 items-center justify-between px-12 bg-[#f1f1f1]">
            <div>
               <h2 className="text-xs font-black uppercase tracking-[0.4em] text-gray-400 mb-1">FYX System v2.0</h2>
@@ -155,7 +148,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, onNavigate, current
            </div>
         </header>
 
-        {/* Content Wrapper */}
         <div className="p-6 sm:p-10 lg:p-12 max-w-[1600px] w-full mx-auto">
           {children}
         </div>

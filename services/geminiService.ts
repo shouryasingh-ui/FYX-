@@ -1,7 +1,5 @@
+import { GoogleGenAI } from "@google/genai";
 
-import { GoogleGenAI, Type } from "@google/genai";
-
-// Strictly follow initialization rules: new GoogleGenAI({ apiKey: process.env.API_KEY })
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const generateProductDescription = async (name: string, category: string, price: number): Promise<string> => {
@@ -47,9 +45,8 @@ export const analyzeSalesTrends = async (orderCount: number, revenue: number): P
 
 export const chatWithCustomer = async (message: string, context: string): Promise<string> => {
   try {
-    // Using Flash-Lite for ultra-low latency responses in chat
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-lite-preview-02-05',
+      model: 'gemini-3-flash-preview',
       contents: message,
       config: {
         systemInstruction: `You are a helpful assistant for FYX, a premium e-commerce store. 
