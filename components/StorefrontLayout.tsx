@@ -32,23 +32,17 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
 
   return (
     <div className="min-h-screen flex flex-col bg-white font-sans relative">
+      {/* Top Banner - Fixed to reference image */}
       {activeBanner && (
-        <div className="bg-black text-white text-[10px] md:text-xs font-bold py-2.5 px-4 text-center relative tracking-widest uppercase animate-slide-up z-[61]">
-           <div className="max-w-7xl mx-auto flex justify-center items-center gap-2">
-              <span className="truncate">{activeBanner.content}</span>
-              {activeBanner.ctaText && (
-                <button 
-                  onClick={() => onNavigate(AppRoute.STORE)} 
-                  className="underline ml-1 hover:no-underline"
-                >
-                  {activeBanner.ctaText}
-                </button>
-              )}
+        <div className="bg-black text-white text-[10px] font-black py-2.5 px-6 text-center relative tracking-[0.15em] uppercase z-[61]">
+           <div className="max-w-7xl mx-auto flex justify-center items-center">
+              <span>{activeBanner.content}</span>
            </div>
            {activeBanner.closable && (
              <button 
                onClick={onCloseBanner}
-               className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:opacity-70"
+               className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:opacity-70 transition"
+               aria-label="Close banner"
              >
                <i className="fa-solid fa-xmark text-sm"></i>
              </button>
@@ -56,39 +50,21 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
         </div>
       )}
 
-      <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-[60] border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      {/* Main Header - Clean white as per reference */}
+      <nav className="bg-white sticky top-0 z-[60] border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 h-14 md:h-16 flex items-center justify-between">
           <div className="flex items-center cursor-pointer" onClick={() => onNavigate(AppRoute.STORE)}>
             <span className="text-2xl font-[900] tracking-tighter text-black uppercase italic">FYX.</span>
           </div>
-
-          <div className="hidden md:flex items-center space-x-8 text-sm font-bold text-gray-500 uppercase tracking-widest">
-            <button onClick={() => onNavigate(AppRoute.STORE)} className="hover:text-black transition">Shop</button>
-            <button onClick={() => onNavigate(AppRoute.SEARCH)} className="hover:text-black transition">Search</button>
-            <button onClick={() => onNavigate(AppRoute.PROFILE)} className="hover:text-black transition">Support</button>
-          </div>
           
-          <div className="hidden md:flex items-center space-x-6">
-            <button onClick={() => onNavigate(AppRoute.SEARCH)} className="hover:opacity-60 transition">
-              <i className="fa-solid fa-magnifying-glass text-xl"></i>
-            </button>
-            <button onClick={() => onNavigate(AppRoute.WISHLIST)} className="relative hover:opacity-60 transition">
-              <i className="fa-regular fa-heart text-xl"></i>
-              {wishlistCount > 0 && <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{wishlistCount}</span>}
-            </button>
-            <button onClick={() => onNavigate(AppRoute.CART)} className="relative hover:opacity-60 transition">
+          <div className="flex items-center space-x-6">
+            <button onClick={() => onNavigate(AppRoute.CART)} className="relative hover:opacity-60 transition text-black">
               <i className="fa-solid fa-bag-shopping text-xl"></i>
-              {cartCount > 0 && <span className="absolute -top-1 -right-1 bg-black text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{cartCount}</span>}
-            </button>
-            <button onClick={() => onNavigate(AppRoute.PROFILE)} className="hover:opacity-60 transition">
-              <i className="fa-regular fa-user text-xl"></i>
-            </button>
-          </div>
-
-          <div className="md:hidden">
-             <button onClick={() => onNavigate(AppRoute.CART)} className="relative p-2">
-              <i className="fa-solid fa-bag-shopping text-xl"></i>
-              {cartCount > 0 && <span className="absolute top-0 right-0 bg-red-500 text-white text-[8px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">{cartCount}</span>}
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-black text-white text-[8px] font-black w-3.5 h-3.5 flex items-center justify-center rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -105,7 +81,7 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
             </div>
             <h2 className="text-4xl font-black uppercase italic tracking-tighter mb-4">Join the FYX Family</h2>
             <p className="text-gray-500 font-medium mb-8 leading-relaxed max-w-lg mx-auto">
-               Subscribe to our newsletter and get exclusive access to new arrivals, special offers, and a <span className="text-black font-bold">15% discount</span> on your first order.
+               Subscribe to our newsletter and get exclusive access to new arrivals and a <span className="text-black font-bold">15% discount</span> on your first order.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto mb-10">
@@ -118,85 +94,18 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
                  Subscribe
                </button>
             </div>
-
-            <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black uppercase tracking-widest text-gray-400">
-               <div className="flex items-center gap-2">
-                  <i className="fa-solid fa-gift text-black"></i>
-                  <span>15% Off First Order</span>
-               </div>
-               <div className="flex items-center gap-2">
-                  <i className="fa-solid fa-star text-black"></i>
-                  <span>Exclusive Offers</span>
-               </div>
-               <div className="flex items-center gap-2">
-                  <i className="fa-regular fa-envelope text-black"></i>
-                  <span>No Spam, Ever</span>
-               </div>
-            </div>
          </div>
-         
-         <div className="absolute top-0 left-0 w-64 h-64 bg-gray-200 rounded-full blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
-         <div className="absolute bottom-0 right-0 w-64 h-64 bg-[#d9c5b2] rounded-full blur-3xl opacity-20 translate-x-1/2 translate-y-1/2"></div>
       </section>
 
-      <footer className="bg-[#1a1614] text-white pt-20 pb-24 md:pb-10 px-6 sm:px-10 lg:px-24">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          <div className="space-y-6">
-            <h3 className="text-4xl font-black tracking-tighter italic">FYX.</h3>
-            <p className="text-gray-400 text-sm font-medium leading-relaxed">
-              Premium customizable products that help you express your unique style. Transform your space and wardrobe with personalized Photo Frames, Posters, Magazines, Gift Accessories, Mugs, and t-shirts.
-            </p>
-            <div className="flex space-x-4">
-               {['fa-instagram', 'fa-twitter', 'fa-facebook-f', 'fa-pinterest-p'].map(icon => (
-                 <button key={icon} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white hover:text-black transition">
-                    <i className={`fa-brands ${icon} text-sm`}></i>
-                 </button>
-               ))}
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-[#9d938b] mb-8">Shop</h4>
-            <ul className="space-y-4 text-gray-400 text-sm font-medium">
-              {['Photo Frames', 'Posters', 'Mugs', 'Men\'s T-Shirts', 'Women\'s T-Shirts', 'Phone Covers', 'Magazine', 'Gift Accessories'].map(item => (
-                 <li key={item}><button className="hover:text-white transition">{item}</button></li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-[#9d938b] mb-8">Help</h4>
-            <ul className="space-y-4 text-gray-400 text-sm font-medium">
-              <li><button className="hover:text-white transition">FAQ</button></li>
-              <li><button className="hover:text-white transition">Contact Support</button></li>
-              <li><button className="hover:text-white transition">Track Order</button></li>
-              <li><button className="hover:text-white transition">Shipping Info</button></li>
-              <li><button className="hover:text-white transition">Returns</button></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-bold text-xs uppercase tracking-[0.2em] text-[#9d938b] mb-8">Stay Updated</h4>
-            <p className="text-gray-400 text-sm mb-6">Subscribe for exclusive offers and updates.</p>
-            <div className="flex items-center bg-white/10 rounded-xl p-1 focus-within:ring-1 focus-within:ring-white/50 transition">
-               <input 
-                 type="email" 
-                 placeholder="Your email" 
-                 className="bg-transparent border-none px-4 py-2 text-sm text-white placeholder-gray-500 w-full outline-none" 
-               />
-               <button className="bg-white text-black font-black text-[10px] uppercase tracking-widest px-4 py-3 rounded-lg hover:bg-gray-200 transition">
-                 SUB
-               </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-[10px] font-bold uppercase text-gray-500 gap-4">
-          <p>© 2025 FYX. All rights reserved. | Secure payments with SSL encryption</p>
-          <div className="flex space-x-6">
-             <button className="hover:text-white transition">Privacy Policy</button>
-             <button className="hover:text-white transition">Terms of Service</button>
-          </div>
+      <footer className="bg-black text-white py-12 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+           <h3 className="text-3xl font-black tracking-tighter italic">FYX.</h3>
+           <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-gray-500">
+              <button className="hover:text-white transition">Privacy</button>
+              <button className="hover:text-white transition">Terms</button>
+              <button className="hover:text-white transition">Contact</button>
+           </div>
+           <p className="text-[10px] font-black uppercase tracking-widest text-gray-600">© 2025 FYX. Premium Quality.</p>
         </div>
       </footer>
 
@@ -223,12 +132,6 @@ const StorefrontLayout: React.FC<StorefrontLayoutProps> = ({
              );
           })}
         </div>
-      </div>
-
-      <div className="hidden md:flex fixed bottom-10 right-10 z-[70] flex-col space-y-4">
-        <button className="w-14 h-14 bg-black text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition">
-          <i className="fa-brands fa-whatsapp text-2xl"></i>
-        </button>
       </div>
     </div>
   );
